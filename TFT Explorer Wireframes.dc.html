@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Kalam:wght@400;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet"><style>
+body{margin:0;background:#f0eee9;font-family:Kalam,system-ui,sans-serif}
+a{color:#2a78d6}a:hover{color:#1a5aa8}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}
+.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}
+.dv-tname{font:700 14px/1.2 Kalam,system-ui,sans-serif;color:#1a1a1a}
+.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}
+.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 12px/1.35 Kalam,system-ui,sans-serif;color:rgba(0,0,0,.6);max-width:560px}
+.dv-card{max-width:100%;background:#fff;border:1.5px solid #1a1a1a;border-radius:8px;box-shadow:3px 3px 0 rgba(26,26,26,.13);overflow:hidden}
+.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}
+.dv-next{margin:22px 0 0;font:400 13px/1.5 Kalam,system-ui,sans-serif;color:rgba(0,0,0,.55)}
+.wf{font-family:Kalam,system-ui,sans-serif;color:#1a1a1a}
+.wf-bar{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1.5px solid #1a1a1a}
+.wf-box{border:1.5px solid #1a1a1a;border-radius:5px}
+.wf-dash{border:1.5px dashed rgba(26,26,26,.45);border-radius:5px}
+.wf-chip{border:1.5px solid #1a1a1a;border-radius:99px;padding:3px 10px;font-size:11px;white-space:nowrap}
+.wf-chip.on{background:#1a1a1a;color:#fff}
+.wf-tab{padding:4px 10px;font-size:12px;border-bottom:2.5px solid transparent}
+.wf-tab.on{border-bottom-color:#e4572e;font-weight:700}
+.wf-mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;letter-spacing:.02em}
+.wf-hd{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:rgba(0,0,0,.5)}
+.wf-row{display:grid;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid rgba(26,26,26,.14);font-size:12px}
+.wf-sq{width:22px;height:22px;border:1.5px solid #1a1a1a;border-radius:4px;background:repeating-linear-gradient(45deg,rgba(26,26,26,.09) 0 3px,transparent 3px 6px);flex:none}
+.wf-ln{height:8px;border-radius:2px;background:rgba(26,26,26,.16)}
+.wf-note{font-family:Caveat,cursive;font-size:14px;color:#e4572e}
+</style></helmet>
+
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Data Explorer — four layout directions</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="1a">
+<div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Rail + table. Filters live in a persistent left rail, pivot as tabs. Densest, most familiar, cheapest to build. Rail eats horizontal room on laptops.</div>
+<div class="dv-card wf" style="width:560px">
+  <div class="wf-bar" style="justify-content:space-between"><span style="font-weight:700;font-size:13px">Explorer</span><span class="wf-mono" style="opacity:.5">patch 16.3 · challenger+ · 2.1M games</span></div>
+  <div style="display:flex;align-items:stretch;min-height:300px">
+    <div style="width:150px;border-right:1.5px solid #1a1a1a;padding:12px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:6px"><span class="wf-hd">Patch</span><div class="wf-box" style="height:24px"></div></div>
+      <div style="display:flex;flex-direction:column;gap:6px"><span class="wf-hd">Rank</span><div class="wf-box" style="height:24px"></div></div>
+      <div style="display:flex;flex-direction:column;gap:6px"><span class="wf-hd">Region</span><div class="wf-box" style="height:24px"></div></div>
+      <div style="display:flex;flex-direction:column;gap:6px"><span class="wf-hd">Cost</span><div style="display:flex;flex-wrap:wrap;gap:5px"><span class="wf-chip">1</span><span class="wf-chip on">2</span><span class="wf-chip">3</span><span class="wf-chip">4</span><span class="wf-chip">5</span></div></div>
+      <div style="display:flex;flex-direction:column;gap:6px"><span class="wf-hd">Min games</span><div class="wf-box" style="height:24px"></div></div>
+      <div class="wf-note" style="margin-top:auto">state lives in the URL</div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div style="display:flex;gap:2px;padding:8px 12px 0;border-bottom:1.5px solid #1a1a1a"><span class="wf-tab on">Units</span><span class="wf-tab">Items</span><span class="wf-tab">Traits</span><span class="wf-tab">Augments</span><span class="wf-tab">Unit+Item</span></div>
+      <div class="wf-row wf-hd" style="grid-template-columns:1fr 52px 46px 46px 54px;background:rgba(26,26,26,.04)"><span>Unit</span><span>Avg</span><span>Top4</span><span>Win</span><span>Games</span></div>
+      <div class="wf-row" style="grid-template-columns:1fr 52px 46px 46px 54px"><span style="display:flex;align-items:center;gap:8px"><span class="wf-sq"></span><span class="wf-ln" style="width:76px"></span></span><span class="wf-mono">4.02</span><span class="wf-mono">58%</span><span class="wf-mono">14%</span><span class="wf-mono">88k</span></div>
+      <div class="wf-row" style="grid-template-columns:1fr 52px 46px 46px 54px"><span style="display:flex;align-items:center;gap:8px"><span class="wf-sq"></span><span class="wf-ln" style="width:94px"></span></span><span class="wf-mono">4.11</span><span class="wf-mono">56%</span><span class="wf-mono">13%</span><span class="wf-mono">61k</span></div>
+      <div class="wf-row" style="grid-template-columns:1fr 52px 46px 46px 54px"><span style="display:flex;align-items:center;gap:8px"><span class="wf-sq"></span><span class="wf-ln" style="width:64px"></span></span><span class="wf-mono">4.29</span><span class="wf-mono">54%</span><span class="wf-mono">12%</span><span class="wf-mono">40k</span></div>
+      <div class="wf-row" style="grid-template-columns:1fr 52px 46px 46px 54px"><span style="display:flex;align-items:center;gap:8px"><span class="wf-sq"></span><span class="wf-ln" style="width:86px"></span></span><span class="wf-mono">4.44</span><span class="wf-mono">51%</span><span class="wf-mono">11%</span><span class="wf-mono">22k</span></div>
+      <div class="wf-row" style="grid-template-columns:1fr 52px 46px 46px 54px;opacity:.45"><span style="display:flex;align-items:center;gap:8px"><span class="wf-sq"></span><span class="wf-ln" style="width:70px"></span></span><span class="wf-mono">3.61</span><span class="wf-mono">64%</span><span class="wf-mono">19%</span><span class="wf-mono">310</span></div>
+      <div style="padding:8px 12px;display:flex;justify-content:space-between;align-items:center"><span class="wf-note">greyed = low sample, flagged not hidden</span><span class="wf-mono" style="opacity:.5">1–50 of 214</span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="dv-opt" id="1b">
+<div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Chip bar + full-bleed grid. Active filters are removable chips across the top; the grid gets the whole width. Best for wide tables and compound pivots. Filter discovery is weaker — everything hides behind "+ filter".</div>
+<div class="dv-card wf" style="width:560px">
+  <div class="wf-bar" style="gap:6px;flex-wrap:wrap"><span style="font-weight:700;font-size:13px;margin-right:4px">Explorer</span><span class="wf-chip on">Units ▾</span><span class="wf-chip">patch 16.3 ×</span><span class="wf-chip">Diamond+ ×</span><span class="wf-chip">n ≥ 500 ×</span><span class="wf-chip wf-dash" style="border-style:dashed">+ filter</span></div>
+  <div class="wf-row wf-hd" style="grid-template-columns:1fr 46px 42px 42px 46px 92px;background:rgba(26,26,26,.04)"><span>Unit</span><span>Avg ▾</span><span>Top4</span><span>Win</span><span>Games</span><span>Placement 1→8</span></div>
+  <div class="wf-row" style="grid-template-columns:1fr 46px 42px 42px 46px 92px"><span style="display:flex;align-items:center;gap:8px"><span class="wf-sq"></span><span class="wf-ln" style="width:82px"></span></span><span class="wf-mono">3.88</span><span class="wf-mono">61%</span><span class="wf-mono">17%</span><span class="wf-mono">92k</span><span style="display:flex;align-items:flex-end;gap:2px;height:20px"><i style="flex:1;height:80%;background:#1a1a1a"></i><i style="flex:1;height:66%;background:#1a1a1a"></i><i style="flex:1;height:58%;background:#1a1a1a"></i><i style="flex:1;height:50%;background:#1a1a1a"></i><i style="flex:1;height:38%;background:rgba(26,26,26,.35)"></i><i style="flex:1;height:30%;background:rgba(26,26,26,.35)"></i><i style="flex:1;height:22%;background:rgba(26,26,26,.35)"></i><i style="flex:1;height:16%;background:rgba(26,26,26,.35)"></i></span></div>
+  <div class="wf-row" style="grid-template-columns:1fr 46px 42px 42px 46px 92px"><span style="display:flex;align-items:center;gap:8px"><span class="wf-sq"></span><span class="wf-ln" style="width:98px"></span></span><span class="wf-mono">4.12</span><span class="wf-mono">56%</span><span class="wf-mono">13%</span><span class="wf-mono">55k</span><span style="display:flex;align-items:flex-end;gap:2px;height:20px"><i style="flex:1;height:54%;background:#1a1a1a"></i><i style="flex:1;height:62%;background:#1a1a1a"></i><i style="flex:1;height:70%;background:#1a1a1a"></i><i style="flex:1;height:58%;background:#1a1a1a"></i><i style="flex:1;height:44%;background:rgba(26,26,26,.35)"></i><i style="flex:1;height:36%;background:rgba(26,26,26,.35)"></i><i style="flex:1;height:28%;background:rgba(26,26,26,.35)"></i><i style="flex:1;height:24%;background:rgba(26,26,26,.35)"></i></span></div>
+  <div class="wf-row" style="grid-template-columns:1fr 46px 42px 42px 46px 92px"><span style="display:flex;align-items:center;gap:8px"><span class="wf-sq"></span><span class="wf-ln" style="width:70px"></span></span><span class="wf-mono">4.35</span><span class="wf-mono">52%</span><span class="wf-mono">11%</span><span class="wf-mono">31k</span><span style="display:flex;align-items:flex-end;gap:2px;height:20px"><i style="flex:1;height:40%;background:#1a1a1a"></i><i style="flex:1;height:48%;background:#1a1a1a"></i><i style="flex:1;height:56%;background:#1a1a1a"></i><i style="flex:1;height:62%;background:#1a1a1a"></i><i style="flex:1;height:54%;background:rgba(26,26,26,.35)"></i><i style="flex:1;height:42%;background:rgba(26,26,26,.35)"></i><i style="flex:1;height:34%;background:rgba(26,26,26,.35)"></i><i style="flex:1;height:26%;background:rgba(26,26,26,.35)"></i></span></div>
+  <div class="wf-row" style="grid-template-columns:1fr 46px 42px 42px 46px 92px"><span style="display:flex;align-items:center;gap:8px"><span class="wf-sq"></span><span class="wf-ln" style="width:88px"></span></span><span class="wf-mono">4.51</span><span class="wf-mono">49%</span><span class="wf-mono">10%</span><span class="wf-mono">18k</span><span style="display:flex;align-items:flex-end;gap:2px;height:20px"><i style="flex:1;height:30%;background:#1a1a1a"></i><i style="flex:1;height:38%;background:#1a1a1a"></i><i style="flex:1;height:46%;background:#1a1a1a"></i><i style="flex:1;height:58%;background:#1a1a1a"></i><i style="flex:1;height:60%;background:rgba(26,26,26,.35)"></i><i style="flex:1;height:50%;background:rgba(26,26,26,.35)"></i><i style="flex:1;height:40%;background:rgba(26,26,26,.35)"></i><i style="flex:1;height:32%;background:rgba(26,26,26,.35)"></i></span></div>
+  <div style="padding:10px 12px;display:flex;justify-content:space-between;align-items:center;border-top:1.5px solid #1a1a1a"><span class="wf-note">distribution is the honest metric — avg place hides bimodal units</span></div>
+</div>
+</div>
+
+<div class="dv-opt" id="1c">
+<div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a><span>Query sentence. The filter set reads as one editable line — "show <b>items</b> on <b>Jinx</b> in <b>Diamond+</b> on <b>16.3</b>". Teaches the data model and makes compound pivots feel natural. Riskiest to build and to get typing-fast.</span></div>
+<div class="dv-card wf" style="width:560px">
+  <div style="padding:16px 14px;border-bottom:1.5px solid #1a1a1a">
+    <div class="wf-hd" style="margin-bottom:8px">Query</div>
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px;font-size:14px;line-height:1.9">
+      <span>show</span><span class="wf-chip on">items ▾</span><span>on</span><span class="wf-chip on">Jinx ▾</span><span>for</span><span class="wf-chip on">Diamond+ ▾</span><span>on patch</span><span class="wf-chip on">16.3 ▾</span><span>with at least</span><span class="wf-chip on">500 ▾</span><span>games</span><span class="wf-chip wf-dash" style="border-style:dashed">+</span>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px;align-items:center"><span class="wf-mono" style="opacity:.55">≡ compare against: Jinx overall (4.21)</span></div>
+  </div>
+  <div class="wf-row wf-hd" style="grid-template-columns:1fr 48px 60px 48px;background:rgba(26,26,26,.04)"><span>Item</span><span>Avg</span><span>Δ base</span><span>Games</span></div>
+  <div class="wf-row" style="grid-template-columns:1fr 48px 60px 48px"><span style="display:flex;align-items:center;gap:8px"><span class="wf-sq" style="border-radius:99px"></span><span class="wf-ln" style="width:104px"></span></span><span class="wf-mono">3.72</span><span class="wf-mono" style="color:#2f7d4f">−0.49</span><span class="wf-mono">14k</span></div>
+  <div class="wf-row" style="grid-template-columns:1fr 48px 60px 48px"><span style="display:flex;align-items:center;gap:8px"><span class="wf-sq" style="border-radius:99px"></span><span class="wf-ln" style="width:88px"></span></span><span class="wf-mono">3.95</span><span class="wf-mono" style="color:#2f7d4f">−0.26</span><span class="wf-mono">11k</span></div>
+  <div class="wf-row" style="grid-template-columns:1fr 48px 60px 48px"><span style="display:flex;align-items:center;gap:8px"><span class="wf-sq" style="border-radius:99px"></span><span class="wf-ln" style="width:120px"></span></span><span class="wf-mono">4.30</span><span class="wf-mono" style="color:#b23b2e">+0.09</span><span class="wf-mono">7.2k</span></div>
+  <div class="wf-row" style="grid-template-columns:1fr 48px 60px 48px"><span style="display:flex;align-items:center;gap:8px"><span class="wf-sq" style="border-radius:99px"></span><span class="wf-ln" style="width:76px"></span></span><span class="wf-mono">4.68</span><span class="wf-mono" style="color:#b23b2e">+0.47</span><span class="wf-mono">3.1k</span></div>
+  <div style="padding:12px;border-top:1.5px solid #1a1a1a;display:flex;gap:8px;align-items:center"><span class="wf-chip wf-dash" style="border-style:dashed">🗣 ask the coach about this query</span><span class="wf-note">the bridge to v2</span></div>
+</div>
+</div>
+
+<div class="dv-opt" id="1d">
+<div class="dv-olabel"><a class="dv-oid" href="#1d" style="background:#2f7d4f;color:#fff">1d ✓ chosen</a><span>Grid + inspector. Selecting a row opens a right panel: distribution, patch trend, best items, and the coach's read. Half explorer, half analysis surface — the only one that makes the LLM feel native rather than bolted on. Spec'd in <code>docs/EXPLORER_UI.md</code>.</span></div>
+<div class="dv-card wf" style="width:600px">
+  <div class="wf-bar" style="gap:6px"><span style="font-weight:700;font-size:13px;margin-right:2px">Explorer</span><span class="wf-chip on">Units ▾</span><span class="wf-chip">16.3</span><span class="wf-chip">Diamond+</span><span class="wf-chip wf-dash" style="border-style:dashed;margin-left:auto">+ filter</span></div>
+  <div style="display:flex;min-height:290px">
+    <div style="flex:1;border-right:1.5px solid #1a1a1a;display:flex;flex-direction:column">
+      <div class="wf-row wf-hd" style="grid-template-columns:1fr 44px 42px;background:rgba(26,26,26,.04)"><span>Unit</span><span>Avg</span><span>Top4</span></div>
+      <div class="wf-row" style="grid-template-columns:1fr 44px 42px"><span style="display:flex;align-items:center;gap:8px"><span class="wf-sq"></span><span class="wf-ln" style="width:70px"></span></span><span class="wf-mono">3.88</span><span class="wf-mono">61%</span></div>
+      <div class="wf-row" style="grid-template-columns:1fr 44px 42px;background:#1a1a1a;color:#fff"><span style="display:flex;align-items:center;gap:8px"><span class="wf-sq" style="border-color:#fff"></span><span class="wf-ln" style="width:84px;background:rgba(255,255,255,.5)"></span></span><span class="wf-mono">4.02</span><span class="wf-mono">58%</span></div>
+      <div class="wf-row" style="grid-template-columns:1fr 44px 42px"><span style="display:flex;align-items:center;gap:8px"><span class="wf-sq"></span><span class="wf-ln" style="width:60px"></span></span><span class="wf-mono">4.29</span><span class="wf-mono">54%</span></div>
+      <div class="wf-row" style="grid-template-columns:1fr 44px 42px"><span style="display:flex;align-items:center;gap:8px"><span class="wf-sq"></span><span class="wf-ln" style="width:92px"></span></span><span class="wf-mono">4.44</span><span class="wf-mono">51%</span></div>
+      <div class="wf-row" style="grid-template-columns:1fr 44px 42px"><span style="display:flex;align-items:center;gap:8px"><span class="wf-sq"></span><span class="wf-ln" style="width:66px"></span></span><span class="wf-mono">4.52</span><span class="wf-mono">49%</span></div>
+      <div class="wf-row" style="grid-template-columns:1fr 44px 42px"><span style="display:flex;align-items:center;gap:8px"><span class="wf-sq"></span><span class="wf-ln" style="width:78px"></span></span><span class="wf-mono">4.61</span><span class="wf-mono">47%</span></div>
+    </div>
+    <div style="width:250px;padding:12px;display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:8px"><span class="wf-sq" style="width:30px;height:30px"></span><div style="display:flex;flex-direction:column;gap:4px"><span class="wf-ln" style="width:84px"></span><span class="wf-mono" style="opacity:.5">4-cost · 41k games</span></div></div>
+      <div><div class="wf-hd" style="margin-bottom:5px">Placement</div><div style="display:flex;align-items:flex-end;gap:3px;height:34px"><i style="flex:1;height:70%;background:#1a1a1a"></i><i style="flex:1;height:82%;background:#1a1a1a"></i><i style="flex:1;height:64%;background:#1a1a1a"></i><i style="flex:1;height:52%;background:#1a1a1a"></i><i style="flex:1;height:44%;background:rgba(26,26,26,.35)"></i><i style="flex:1;height:34%;background:rgba(26,26,26,.35)"></i><i style="flex:1;height:26%;background:rgba(26,26,26,.35)"></i><i style="flex:1;height:20%;background:rgba(26,26,26,.35)"></i></div></div>
+      <div><div class="wf-hd" style="margin-bottom:5px">Best items</div><div style="display:flex;flex-direction:column;gap:5px"><span style="display:flex;align-items:center;gap:6px"><span class="wf-sq" style="width:16px;height:16px;border-radius:99px"></span><span class="wf-ln" style="width:88px"></span><span class="wf-mono" style="margin-left:auto">3.72</span></span><span style="display:flex;align-items:center;gap:6px"><span class="wf-sq" style="width:16px;height:16px;border-radius:99px"></span><span class="wf-ln" style="width:72px"></span><span class="wf-mono" style="margin-left:auto">3.95</span></span><span style="display:flex;align-items:center;gap:6px"><span class="wf-sq" style="width:16px;height:16px;border-radius:99px"></span><span class="wf-ln" style="width:96px"></span><span class="wf-mono" style="margin-left:auto">4.10</span></span></div></div>
+      <div class="wf-dash" style="padding:9px;display:flex;flex-direction:column;gap:5px"><span class="wf-hd">Coach read</span><span style="font-size:12px;line-height:1.45">Casts at 3.1s with full mana-lock. Wants sustain over raw AP — its shred lands before your carry's second cast, so cluster it left of the frontline.</span><span class="wf-mono" style="opacity:.5">cited: ability vars 16.3 · sim #221</span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: "build out <a class="dv-oid" href="#1d">1d</a> with the filter panel from <a class="dv-oid" href="#1a">1a</a>" · "show me the coach panel as its own screen" · "wireframe the ingestion admin view"</p>
+</section>
+</x-dc>
+</body>
+</html>
