@@ -1,0 +1,26 @@
+{
+  "name": "xd-tactics",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "TFT statistics explorer and itemization coach",
+  "packageManager": "pnpm@11.22.0",
+  "scripts": {
+    "test": "vitest run --passWithNoTests",
+    "test:coverage": "vitest run --coverage --passWithNoTests",
+    "test:e2e": "playwright test",
+    "type-check": "tsc -b --pretty false",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "build": "pnpm -r --if-present build",
+    "check": "pnpm type-check && pnpm lint && pnpm test && pnpm build"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.12",
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^22.10.0",
+    "@vitest/coverage-v8": "^5.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.0"
+  }
+}
