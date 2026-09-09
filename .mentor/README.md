@@ -7,7 +7,7 @@ A portable context system. Four files, no tooling, works in any Claude session.
 ├── README.md        ← you are here (loader + how to use)
 ├── MENTOR_CODEX.md  ← universal rules (same in every repo)
 ├── PROJECT.md       ← this repo's state (different per repo)
-└── ALTERNATIVES.md  ← where you overrode the CODEX (grows over time)
+└── ALTERNATIVES.md  ← unproven overrides only; entries graduate into the CODEX and are deleted
 ```
 
 ---
@@ -47,8 +47,8 @@ Ask:
 ```
 Close the session. Give me:
 1. The PROJECT.md diff (current state, next step)
-2. An ALTERNATIVES.md entry if I overrode the CODEX
-3. Whether anything belongs in MENTOR_CODEX (only if it recurred 3+ times)
+2. An ALTERNATIVES.md entry if I overrode the CODEX and the override is still unproven
+3. Any decision that has now proven itself — fold it into MENTOR_CODEX and delete its ALTERNATIVES entry
 ```
 
 Then paste the results into the files and commit:
@@ -70,8 +70,9 @@ cp xd-components/.mentor/README.md        new-project/.mentor/
 # then write a fresh PROJECT.md from the template below
 ```
 
-MENTOR_CODEX and ALTERNATIVES carry over untouched — that is the whole point.
-Everything you learned in the last repo arrives with them. Only PROJECT.md is new.
+MENTOR_CODEX carries over untouched — that is the whole point. Everything you learned in the last
+repo is already in it. Copy ALTERNATIVES.md too, but it should be near-empty: anything proven has
+already graduated into the CODEX. Only PROJECT.md is genuinely new.
 
 ### PROJECT.md template
 
@@ -110,7 +111,9 @@ Everything you learned in the last repo arrives with them. Only PROJECT.md is ne
 
 ## Maintenance rules
 
-- **MENTOR_CODEX** changes rarely. Only when a pattern proved itself across 3+ projects.
+- **MENTOR_CODEX** grows when a decision proves itself in practice — working, with reasoning that
+  generalises. No project-count gate. That is the file that carries learning between repos.
 - **PROJECT.md** changes every phase. Keep it under ~150 lines; it is state, not history.
-- **ALTERNATIVES.md** is append-only. Never delete an entry — a reversed decision gets a new entry saying so.
+- **ALTERNATIVES.md** holds only *unproven* overrides. When one graduates into the CODEX, delete
+  its entry. A reversed decision gets a fresh entry saying so. The file starts empty in a new repo.
 - Everything is committed. `git log .mentor/` is the story of how you learned.

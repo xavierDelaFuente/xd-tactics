@@ -1,8 +1,8 @@
 # PROJECT — xd-tactics
 
 **Type**: app (multi-process: web + api + worker)
-**Status**: Phase 0 of 7 — not started
-**Repo**: https://github.com/xavierDelaFuente/xd-tactics (empty)
+**Status**: Phase 0 of 7 — in progress (0.1 walking skeleton done)
+**Repo**: https://github.com/xavierDelaFuente/xd-tactics
 **Local**: C:\Users\xixar\Repos\2026\xd-tactics
 
 TFT statistics explorer, plus an itemization coach. The explorer earns the infrastructure;
@@ -10,9 +10,9 @@ the coach is the reason the product exists.
 
 ## Stack
 
-TypeScript strict · pnpm workspaces · Vite + React (web) · Fastify (api) · Node (worker) ·
-Postgres · Tailwind (app default per CODEX) · Vitest + Testing Library + Testcontainers +
-Playwright · GitHub Actions · consumes `@asnewyla/*` from xd-components.
+TypeScript strict · pnpm workspaces · Vite + React 19 (web) · Fastify (api) · Node (worker) ·
+Postgres · Tailwind (app default per CODEX) · Biome (lint + format) · Vitest + Testing Library +
+Testcontainers + Playwright · GitHub Actions · consumes `@asnewyla/*` from xd-components.
 
 ```
 apps/web  apps/api  apps/worker      ← deployable, never published
@@ -27,11 +27,12 @@ packages/contracts                   ← zod schemas shared by api + web
 | Data source | Riot API directly, own ingestion + storage | First-party, no ToS risk, no inherited bugs |
 | API key tier | Development key now; Personal key at Phase 2 | Non-commercial learning project. Correctness is proven by fixtures, not volume; the dev key's 24h expiry only bites once the worker runs unattended. Production key is out of scope |
 | Set data source | Community Dragon | Data Dragon lags on TFT; CDragon carries ability variables — the coach's whole knowledge base |
-| Workspace shape | One workspace, `apps/` + `packages/` | Three runtimes sharing domain types. CODEX gap, logged in ALTERNATIVES |
+| Workspace shape | One workspace, `apps/` + `packages/` | Three runtimes sharing domain types. Now CODEX Part 2, Structure (deployable-units tree) |
 | Aggregation | Precomputed rollups, not query-time scans | The grid cannot scan fact rows per request |
 | Raw storage | Immutable raw match jsonb | Extraction logic will be wrong once; reprocessing must not mean re-fetching |
 | LLM grounding | Model never computes, never recalls | See `docs/LLM_GROUNDING.md` |
 | Testing | Pyramid, one Playwright flow per feature | Per CODEX 2.1 E2E budget |
+| Lint + format | Biome, not ESLint + Prettier | One fast tool, native TS/JSX; type-aware lint left to `tsc` strict. Now CODEX Part 2, Lint and format |
 | Explorer layout | Grid + inspector panel (wireframe 1d) | The inspector is where the coach lives natively rather than as a bolted-on page. Spec: `docs/EXPLORER_UI.md` |
 
 ## Constraints
@@ -59,13 +60,21 @@ packages/contracts                   ← zod schemas shared by api + web
 
 ## Current State
 
-**Done**: Design phase closed. Mentor system, architecture, grounding design, backlog and the
-explorer spec are written. Repo scaffolding (workspace config, tsconfig, CI workflow, gitignore)
-is prepared but not yet installed.
-**In progress**: Nothing. Awaiting the first TDD cycle.
-**Next**: Phase 0.1 — follow `SETUP.md`, configure the branch protection gate, then write
-`apps/web/e2e/explorer.spec.ts`: a Playwright test that loads the app and expects the text
-"Explorer". Confirm it fails for the right reason before writing any app code.
+**Done**: Task 0.1 — walking skeleton. pnpm workspace installed (`apps/{web,api,worker}`,
+`packages/{domain,contracts}`), strict TS solution-style build (`tsc -b`), Biome, Vitest,
+Playwright. CI on `main`: 5 jobs (test · type-check · lint · build · e2e), branch protection
+with the four required checks. `apps/web` is a Vite + React app rendering `<h1>Explorer</h1>`;
+`apps/web/e2e/explorer.spec.ts` loads it and asserts the heading — red-then-green, passing.
+Work is on branch `feature/initial-scafolding` (PR open).
+**In progress**: Phase 0, task 0.2.
+**Next**: Task 0.2 — `C` `GET /explorer?pivot=unit` returns a zod-valid payload with exactly
+one hardcoded row (contract test first, in `apps/api` / `packages/contracts`), then `E` the
+grid renders that row's name and avg placement. Stand up `apps/api` (Fastify) as part of it.
+
+**Environment note**: this machine's IPv6 is black-holed; Playwright's browser downloader
+forces IPv6-first and hangs. Browsers were installed by fetching the zips over IPv4 with curl
+into `%LOCALAPPDATA%\ms-playwright\`. CI (Linux) is unaffected. If `playwright install` hangs
+again after a version bump, do the same manual fetch.
 
 ## Open Questions
 
