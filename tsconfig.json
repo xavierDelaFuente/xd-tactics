@@ -1,5 +1,9 @@
 {
   "//": "Solution-style root config. Add a reference as each workspace package/app gains its own tsconfig.json.",
   "files": [],
-  "references": [{ "path": "packages/domain" }, { "path": "packages/contracts" }]
+  "references": [
+    { "path": "packages/domain" },
+    { "path": "packages/contracts" },
+    { "path": "apps/web" }
+  ]
 }

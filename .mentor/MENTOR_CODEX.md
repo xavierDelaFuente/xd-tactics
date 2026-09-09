@@ -68,8 +68,9 @@ improvise silently and do not stretch an unrelated rule to fit. Say:
 > "The CODEX has no rule for X. Here is what I would do and why. If you agree, it becomes an
 > ALTERNATIVES entry as a *gap filled*, not an override."
 
-A gap filled is tracked the same as an override. Three of the same gap across projects
-promotes it into Part 2 like any other pattern. The system only learns if the gaps get logged.
+A gap filled is tracked the same as an override: it goes in ALTERNATIVES first. Once it has
+proven itself in practice it moves into Part 2 and the entry is deleted. The system only learns
+if the gaps get logged before they graduate.
 
 **Be honest about weak spots.**
 If a suggestion has a real downside, name it in the same breath. If something they built
@@ -80,8 +81,11 @@ one failure mode this system exists to prevent.
 
 When asked to close, output three blocks and nothing else:
 1. **PROJECT.md diff** — the lines to change (Status, Phases, Current State, Open Questions)
-2. **ALTERNATIVES.md entry** — only if the developer overrode the CODEX. Otherwise: "No deviations."
-3. **CODEX candidate** — only if a pattern appeared for the 3rd+ time. Otherwise: "No CODEX change."
+2. **ALTERNATIVES.md entry** — only if the developer overrode the CODEX and the override is still
+   unproven. Otherwise: "No deviations."
+3. **CODEX change** — if a decision (this session's or an existing ALTERNATIVES entry) has proven
+   itself in practice — working, with reasoning that generalises — fold it into Part 2/3 now and
+   delete its ALTERNATIVES entry. There is no project-count gate. Otherwise: "No CODEX change."
 
 ---
 
@@ -147,6 +151,11 @@ Whatever the shape: **domain logic lives in a package with zero I/O.** No HTTP c
 database handle, no filesystem, no clock, no random. That package is where the tests are cheap,
 fast and meaningful — everything else is an adapter around it.
 
+**Verify a name before you spread it.** Before committing an npm scope or org name across the
+codebase, confirm it is actually free on the registry — the token-creation UI or an org lookup
+will tell you. Renaming every package because the scope was taken is a day you do not get back;
+xd-components did it twice.
+
 ### CI/CD
 
 Minimum gate on `main`:
@@ -165,6 +174,19 @@ Jobs run in parallel. A red check blocks merge — including for you.
 | Design system | Tokens + CSS Modules | Theming needs a variable layer |
 
 Defaults, not laws. Override with a reason, and record it.
+
+If the bundler's CSS Modules support is unreliable — tsup and esbuild have shipped broken or
+still-experimental implementations — hand-namespaced plain CSS (`.xd-button`), imported for its
+side effect, is an acceptable fallback. Verify a real scoped class name actually ships in the
+build output before calling it done.
+
+### Lint and format
+
+**Biome** — one tool for lint, format and import sorting, configured by a single `biome.json`.
+No ESLint, no Prettier. It parses TS/JSX natively and runs in milliseconds. Type-aware linting
+is left to `tsc` under `strict` (already non-negotiable), which is where the rule sets would
+otherwise overlap. Reach for ESLint only when a required rule or plugin genuinely has no Biome
+equivalent — and record that as an ALTERNATIVES entry.
 
 ### External data
 
@@ -277,4 +299,6 @@ Show focus rings on the second only.
 | 2.0 | Added Session Protocol and Behavioral Contract; made rules operational | Codex read as a style guide, not as instructions |
 | 1.0 | Initial principles, stack defaults, decision trees | Start of xd-components |
 
-Add a row only when a pattern has proven itself across three or more projects.
+A decision graduates from ALTERNATIVES into the rules above as soon as it has proven itself in
+practice — working, with reasoning that generalises — not after an arbitrary project count. Add
+a version-log row here only for substantial restructures, not for every folded-in entry.
