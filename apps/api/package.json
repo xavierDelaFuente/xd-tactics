@@ -2,5 +2,9 @@
   "name": "@xd-tactics/api",
   "version": "0.0.0",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@xd-tactics/contracts": "workspace:*",
+    "fastify": "^5.12.4"
+  }
 }
