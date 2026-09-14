@@ -3,8 +3,14 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts"
+  },
   "dependencies": {
     "@xd-tactics/contracts": "workspace:*",
     "fastify": "^5.12.4"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.13"
   }
 }
