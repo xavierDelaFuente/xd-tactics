@@ -1,24 +1,7 @@
-import type { ExplorerRow } from '@xd-tactics/contracts';
-import { useEffect, useState } from 'react';
+import { useExplorerRows } from './useExplorerRows';
 
 export function ExplorerGrid() {
-  const [rows, setRows] = useState<ExplorerRow[]>([]);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    fetch('/explorer?pivot=unit')
-      .then((response) => response.json())
-      .then((data: ExplorerRow[]) => {
-        if (!cancelled) {
-          setRows(data);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const rows = useExplorerRows();
 
   return (
     <table>
