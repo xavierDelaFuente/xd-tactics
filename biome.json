@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!support.js", "!**/*.dc.html", "!.thumbnail"]
+    "includes": ["**", "!support.js", "!**/*.dc.html", "!.thumbnail", "!**/fixtures"]
   },
   "formatter": {
     "enabled": true,

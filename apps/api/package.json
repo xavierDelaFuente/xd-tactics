@@ -8,7 +8,9 @@
   },
   "dependencies": {
     "@xd-tactics/contracts": "workspace:*",
-    "fastify": "^5.12.4"
+    "@xd-tactics/domain": "workspace:*",
+    "fastify": "^5.12.4",
+    "zod": "^4.6.2"
   },
   "devDependencies": {
     "tsx": "^4.23.13"

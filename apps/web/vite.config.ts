@@ -10,6 +10,7 @@ export default defineConfig({
       // Dev-only: routes /explorer to the Fastify API so the browser never sees a
       // cross-origin request. Production routing (reverse proxy / gateway) is a later phase.
       '/explorer': 'http://localhost:3001',
+      '/static': 'http://localhost:3001',
     },
   },
 });
