@@ -4,6 +4,8 @@
   "references": [
     { "path": "packages/domain" },
     { "path": "packages/contracts" },
-    { "path": "apps/web" }
+    { "path": "apps/web" },
+    { "path": "apps/api" },
+    { "path": "apps/worker" }
   ]
 }

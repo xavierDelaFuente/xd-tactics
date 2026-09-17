@@ -2,6 +2,13 @@ packages:
   - "apps/*"
   - "packages/*"
 
+allowBuilds:
+  esbuild: true
+
+minimumReleaseAgeExclude:
+  - fastify@5.12.4
+  - jsdom@30.1.0
+
 onlyBuiltDependencies:
   - "@biomejs/biome"
   - esbuild
