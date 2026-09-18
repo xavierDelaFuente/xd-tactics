@@ -35,6 +35,19 @@ packages/contracts              zod schemas shared by api + web
 
 Nothing in `apps/` is ever published. `packages/*` are internal to the workspace.
 
+## Changesets
+
+Every PR that changes a package under `apps/*` or `packages/*` should include a changeset
+describing the scope and nature of the change:
+
+```
+pnpm changeset
+```
+
+This records what changed and why in `.changeset/`, which `changeset version` later rolls up
+into each package's `CHANGELOG.md`. CI (`pnpm changeset:status`) flags PRs that touch package
+code but have no changeset attached.
+
 ## Working agreement
 
 TDD, red first, one cycle at a time. See the Session Protocol in `.mentor/MENTOR_CODEX.md`.
