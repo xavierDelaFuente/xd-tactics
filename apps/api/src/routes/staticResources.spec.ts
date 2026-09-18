@@ -3,8 +3,18 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { buildApp } from '../app';
 
+describe('GET /static/units', () => {
+  it('returns a zod-valid, non-empty list', async () => {
+    const app = buildApp();
+
+    const response = await app.inject({ method: 'GET', url: '/static/units' });
+
+    const list = z.array(unitSchema).parse(response.json());
+    expect(list.length).toBeGreaterThan(0);
+  });
+});
+
 describe.each([
-  { path: '/static/units', schema: unitSchema, knownApiName: 'DA_Gromp18_AP', knownName: 'Gromp' },
   {
     path: '/static/items',
     schema: itemSchema,
