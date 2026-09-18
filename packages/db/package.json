@@ -1,0 +1,15 @@
+{
+  "name": "@xd-tactics/db",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@xd-tactics/domain": "workspace:*",
+    "kysely": "^0.29.6",
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.23.1"
+  }
+}

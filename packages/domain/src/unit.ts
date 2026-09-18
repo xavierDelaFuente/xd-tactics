@@ -17,6 +17,8 @@ export const unitAbilityVariableSchema = z.object({
   value: z.array(z.number()),
 });
 
+export type UnitAbilityVariable = z.infer<typeof unitAbilityVariableSchema>;
+
 export const unitAbilitySchema = z.object({
   name: z.string(),
   mana: z.number(),

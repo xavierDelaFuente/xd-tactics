@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseTrait } from './trait';
+import { parseTrait } from '../trait';
 
 // Deeper shape-variety coverage (real, messy source data) comes from the CDragon
 // adapter's fixture-backed test in apps/worker — this just locks the domain shape.

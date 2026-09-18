@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ZodError } from 'zod';
-import { parseUnit } from './unit';
+import { parseUnit } from '../unit';
 
 const fixtureUnit = {
   apiName: 'TFT15_Jinx',
