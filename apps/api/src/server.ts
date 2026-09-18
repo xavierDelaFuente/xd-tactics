@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url';
-import { createDb } from '@xd-tactics/db';
 import { buildApp } from './app';
+import { createDbFromEnv } from './createDbFromEnv';
 
 try {
   process.loadEnvFile(fileURLToPath(new URL('../../../.env', import.meta.url)));
@@ -10,18 +10,14 @@ try {
 }
 
 const port = Number(process.env.PORT ?? 3001);
-const databaseUrl = process.env.DATABASE_URL;
+const db = createDbFromEnv(process.env);
 
-// Only /static/units/:apiName needs Postgres — every other route (explorer, items, traits,
-// the units list) is still mock-backed. A missing DATABASE_URL shouldn't take the whole
-// server down; buildApp already 500s just that one route when db is undefined.
-if (!databaseUrl) {
+if (!db) {
   console.warn(
     'DATABASE_URL is not set — /static/units/:apiName will 500. Copy .env.example to .env to enable it.',
   );
 }
 
-const db = databaseUrl ? createDb(databaseUrl) : undefined;
 const app = buildApp(db);
 
 app
