@@ -1,6 +1,13 @@
 import type { ExplorerRow } from '@xd-tactics/contracts';
-import Fastify from 'fastify';
-import { getAllUnits, getUnitByApiName } from './static/units';
+import Fastify, { type FastifyInstance } from 'fastify';
+import {
+  getAllItems,
+  getAllTraits,
+  getAllUnits,
+  getItemByApiName,
+  getTraitByApiName,
+  getUnitByApiName,
+} from './static/setData';
 
 const HARDCODED_ROW: ExplorerRow = {
   key: 'TFT15_Jinx',
@@ -11,20 +18,33 @@ const HARDCODED_ROW: ExplorerRow = {
   win: 0.12,
 };
 
+// Units, items and traits are all "look up by apiName, or list everything" — same shape,
+// registered once instead of three times.
+function registerStaticResource<T>(
+  app: FastifyInstance,
+  path: string,
+  getAll: () => T[],
+  getByApiName: (apiName: string) => T | undefined,
+) {
+  app.get(path, async () => getAll());
+
+  app.get<{ Params: { apiName: string } }>(`${path}/:apiName`, async (request, reply) => {
+    const entity = getByApiName(request.params.apiName);
+    if (!entity) {
+      return reply.code(404).send({ error: 'not found' });
+    }
+    return entity;
+  });
+}
+
 export function buildApp() {
   const app = Fastify();
 
   app.get('/explorer', async (): Promise<ExplorerRow[]> => [HARDCODED_ROW]);
 
-  app.get('/static/units', async () => getAllUnits());
-
-  app.get<{ Params: { apiName: string } }>('/static/units/:apiName', async (request, reply) => {
-    const unit = getUnitByApiName(request.params.apiName);
-    if (!unit) {
-      return reply.code(404).send({ error: 'unit not found' });
-    }
-    return unit;
-  });
+  registerStaticResource(app, '/static/units', getAllUnits, getUnitByApiName);
+  registerStaticResource(app, '/static/items', getAllItems, getItemByApiName);
+  registerStaticResource(app, '/static/traits', getAllTraits, getTraitByApiName);
 
   return app;
 }
