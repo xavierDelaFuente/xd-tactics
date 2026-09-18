@@ -1,12 +1,11 @@
-import { PostgreSqlContainer, type StartedPostgreSqlContainer } from '@testcontainers/postgresql';
+import { type StartedPostgreSqlContainer } from '@testcontainers/postgresql';
 import type { Unit } from '@xd-tactics/domain';
-import { Kysely, PostgresDialect } from 'kysely';
-import { Pool } from 'pg';
+import { type Kysely } from 'kysely';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { getUnit } from '../getUnit';
-import { migrateToLatest } from '../migrator';
 import type { Database } from '../schema';
 import { syncUnitsForPatch } from '../syncUnitsForPatch';
+import { clearDbAfterTest, configureDbForTest, stopContainerAfterTest } from '../test-utils';
 
 function fixtureUnit(overrides: Partial<Unit> = {}): Unit {
   return {
@@ -25,20 +24,12 @@ describe('syncUnitsForPatch + getUnit', () => {
   let db: Kysely<Database>;
 
   beforeAll(async () => {
-    container = await new PostgreSqlContainer('postgres:18').start();
-    db = new Kysely<Database>({
-      dialect: new PostgresDialect({
-        pool: new Pool({ connectionString: container.getConnectionUri() }),
-      }),
-    });
-
-    const { error } = await migrateToLatest(db);
-    if (error) throw error;
+    ({ db, container } = await configureDbForTest());
   }, 60_000);
 
   afterAll(async () => {
-    await db.destroy();
-    await container.stop();
+    await clearDbAfterTest(db);
+    await stopContainerAfterTest(container);
   });
 
   it("returns each patch's own stats for the same unit", async () => {

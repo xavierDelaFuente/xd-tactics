@@ -1,25 +1,21 @@
-import { PostgreSqlContainer, type StartedPostgreSqlContainer } from '@testcontainers/postgresql';
-import { Kysely, PostgresDialect, sql } from 'kysely';
-import { Pool } from 'pg';
+import type { StartedPostgreSqlContainer } from '@testcontainers/postgresql';
+import { type Kysely, sql } from 'kysely';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { migrateToLatest } from '../migrator';
+import type { Database } from '../schema';
+import { clearDbAfterTest, configureDbForTest, stopContainerAfterTest } from '../test-utils';
 
 describe('migrateToLatest', () => {
   let container: StartedPostgreSqlContainer;
-  let db: Kysely<unknown>;
+  let db: Kysely<Database>;
 
   beforeAll(async () => {
-    container = await new PostgreSqlContainer('postgres:18').start();
-    db = new Kysely({
-      dialect: new PostgresDialect({
-        pool: new Pool({ connectionString: container.getConnectionUri() }),
-      }),
-    });
+    ({ db, container } = await configureDbForTest());
   }, 60_000);
 
   afterAll(async () => {
-    await db.destroy();
-    await container.stop();
+    await clearDbAfterTest(db);
+    await stopContainerAfterTest(container);
   });
 
   it('creates a set_data_units table keyed by (patch, api_name)', async () => {
