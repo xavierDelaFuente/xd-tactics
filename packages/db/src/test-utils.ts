@@ -25,8 +25,8 @@ export function clearDbAfterTest(db: Kysely<Database>) {
   return db.destroy();
 }
 
-export function stopContainerAfterTest(container: StartedPostgreSqlContainer) {
-  return container.stop();
+export async function stopContainerAfterTest(container: StartedPostgreSqlContainer): Promise<void> {
+  await container.stop();
 }
 
 export async function setupDbForTest() {

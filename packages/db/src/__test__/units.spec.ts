@@ -1,6 +1,6 @@
-import { type StartedPostgreSqlContainer } from '@testcontainers/postgresql';
+import type { StartedPostgreSqlContainer } from '@testcontainers/postgresql';
 import type { Unit } from '@xd-tactics/domain';
-import { type Kysely } from 'kysely';
+import type { Kysely } from 'kysely';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { getUnit } from '../getUnit';
 import type { Database } from '../schema';
