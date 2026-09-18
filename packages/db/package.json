@@ -5,6 +5,7 @@
   "type": "module",
   "main": "src/index.ts",
   "dependencies": {
+    "@xd-tactics/domain": "workspace:*",
     "kysely": "^0.29.6",
     "pg": "^8.23.0"
   },
