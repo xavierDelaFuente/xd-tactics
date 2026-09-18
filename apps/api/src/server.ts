@@ -12,11 +12,16 @@ try {
 const port = Number(process.env.PORT ?? 3001);
 const databaseUrl = process.env.DATABASE_URL;
 
+// Only /static/units/:apiName needs Postgres — every other route (explorer, items, traits,
+// the units list) is still mock-backed. A missing DATABASE_URL shouldn't take the whole
+// server down; buildApp already 500s just that one route when db is undefined.
 if (!databaseUrl) {
-  throw new Error('DATABASE_URL is required — copy .env.example to .env and fill it in');
+  console.warn(
+    'DATABASE_URL is not set — /static/units/:apiName will 500. Copy .env.example to .env to enable it.',
+  );
 }
 
-const db = createDb(databaseUrl);
+const db = databaseUrl ? createDb(databaseUrl) : undefined;
 const app = buildApp(db);
 
 app
