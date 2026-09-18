@@ -1,12 +1,15 @@
 import type { ExplorerRow } from '@xd-tactics/contracts';
+import type { Database } from '@xd-tactics/db';
+import { getUnit } from '@xd-tactics/db';
+import { resolveAbilityVariables } from '@xd-tactics/domain';
 import Fastify, { type FastifyInstance } from 'fastify';
+import type { Kysely } from 'kysely';
 import {
   getAllItems,
   getAllTraits,
   getAllUnits,
   getItemByApiName,
   getTraitByApiName,
-  getUnitByApiName,
 } from './static/setData';
 
 const HARDCODED_ROW: ExplorerRow = {
@@ -18,8 +21,9 @@ const HARDCODED_ROW: ExplorerRow = {
   win: 0.12,
 };
 
-// Units, items and traits are all "look up by apiName, or list everything" — same shape,
-// registered once instead of three times.
+// Items and traits are "look up by apiName, or list everything" — same shape, registered once
+// instead of twice. Units diverges: its single-entity route is patch/star-aware and reads from
+// Postgres, not the static mock, so it gets its own registration below.
 function registerStaticResource<T>(
   app: FastifyInstance,
   path: string,
@@ -37,12 +41,45 @@ function registerStaticResource<T>(
   });
 }
 
-export function buildApp() {
+function parseStarLevel(star: string | undefined): number {
+  const parsed = Number(star);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
+}
+
+export function buildApp(db?: Kysely<Database>) {
   const app = Fastify();
 
   app.get('/explorer', async (): Promise<ExplorerRow[]> => [HARDCODED_ROW]);
 
-  registerStaticResource(app, '/static/units', getAllUnits, getUnitByApiName);
+  app.get('/static/units', async () => getAllUnits());
+
+  app.get<{ Params: { apiName: string }; Querystring: { patch?: string; star?: string } }>(
+    '/static/units/:apiName',
+    async (request, reply) => {
+      const { patch, star } = request.query;
+      if (!patch) {
+        return reply.code(400).send({ error: 'patch query param is required' });
+      }
+      if (!db) {
+        return reply.code(500).send({ error: 'database not configured' });
+      }
+
+      const unit = await getUnit(db, request.params.apiName, patch);
+      if (!unit) {
+        return reply.code(404).send({ error: 'not found' });
+      }
+
+      return {
+        ...unit,
+        ability: {
+          name: unit.ability.name,
+          mana: unit.ability.mana,
+          variables: resolveAbilityVariables(unit.ability.variables, parseStarLevel(star)),
+        },
+      };
+    },
+  );
+
   registerStaticResource(app, '/static/items', getAllItems, getItemByApiName);
   registerStaticResource(app, '/static/traits', getAllTraits, getTraitByApiName);
 

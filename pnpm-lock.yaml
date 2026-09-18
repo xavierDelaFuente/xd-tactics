@@ -41,16 +41,25 @@ importers:
       '@xd-tactics/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@xd-tactics/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@xd-tactics/domain':
         specifier: workspace:*
         version: link:../../packages/domain
       fastify:
         specifier: ^5.12.4
         version: 5.12.4
+      kysely:
+        specifier: ^0.29.6
+        version: 0.29.6
       zod:
         specifier: ^4.6.2
         version: 4.6.2
     devDependencies:
+      '@testcontainers/postgresql':
+        specifier: ^12.1.0
+        version: 12.1.0
       tsx:
         specifier: ^4.23.13
         version: 4.23.13
@@ -94,6 +103,9 @@ importers:
 
   apps/worker:
     dependencies:
+      '@xd-tactics/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@xd-tactics/domain':
         specifier: workspace:*
         version: link:../../packages/domain

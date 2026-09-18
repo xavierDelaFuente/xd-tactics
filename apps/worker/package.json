@@ -4,9 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "generate:mock": "tsx src/static/generateMock.ts"
+    "generate:mock": "tsx src/static/generateMock.ts",
+    "seed:db": "tsx src/static/seedDb.ts"
   },
   "dependencies": {
+    "@xd-tactics/db": "workspace:*",
     "@xd-tactics/domain": "workspace:*"
   },
   "devDependencies": {

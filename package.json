@@ -6,6 +6,7 @@
   "description": "TFT statistics explorer and itemization coach",
   "packageManager": "pnpm@11.22.0",
   "scripts": {
+    "start": "pnpm --parallel --filter @xd-tactics/api --filter @xd-tactics/web run dev",
     "test": "vitest run --passWithNoTests",
     "test:coverage": "vitest run --coverage --passWithNoTests",
     "test:e2e": "pnpm --filter @xd-tactics/web test:e2e",

@@ -1,7 +1,7 @@
 # PROJECT — xd-tactics
 
 **Type**: app (multi-process: web + api + worker)
-**Status**: Phase 1 of 7 — in progress (1.1–1.3 done, 1.4 half done)
+**Status**: Phase 1 of 7 — done, pending merge to `main`. Phase 2 not started.
 **Repo**: https://github.com/xavierDelaFuente/xd-tactics
 **Local**: C:\Users\xixar\Repos\2026\xd-tactics
 
@@ -40,7 +40,8 @@ packages/db                          ← Kysely + pg, the only package that touc
 | Explorer layout | Grid + inspector panel (wireframe 1d) | The inspector is where the coach lives natively rather than as a bolted-on page. Spec: `docs/EXPLORER_UI.md` |
 | DB toolchain | Kysely + `pg`, not Drizzle/Prisma/raw SQL | Typed query builder, no magic query generation, no second migration tool — matches "parse, don't cast" better than an ORM |
 | DB package boundary | `packages/db` (I/O), separate from `packages/domain` (zero I/O) | Domain's zero-I/O rule is real; a Postgres client doesn't belong there. `getUnit`/`syncUnitsForPatch` live in db, re-validate through domain's `parseUnit` on the way out |
-| Static reads before Postgres | `apps/api` serves units/items/traits from a frozen JSON mock (real adapter output, not fake data) instead of a DB | Deliberate scope cut to get the web app rendering real CDragon data end-to-end without waiting on Postgres/Testcontainers setup. `packages/db` now exists and is fully tested (Testcontainers) but **is not yet wired into `apps/api`** — swapping `setData.ts`'s `loadUnits()` for `getUnit`/patch-aware reads is the remaining half of Phase 1.4 |
+| Static reads before Postgres | `apps/api` serves items/traits/the units *list* from a frozen JSON mock; only `GET /static/units/:apiName?patch=&star=` reads real Postgres | Deliberate scope cut, now half-resolved: the one route BACKLOG 1.4 actually specifies is DB-backed and patch/star-aware; items/traits and the units list stay mock-backed since nothing in the backlog needs them to be more than that yet |
+| `db` is optional in `buildApp` | `buildApp(db?: Kysely<Database>)`, not required | Only one route needs Postgres. A missing `DATABASE_URL` must not take down `/explorer`/items/traits/the units list — `server.ts` warns and passes `db: undefined`; the one DB route 500s on its own. (First version of `server.ts` got this wrong — see Environment notes) |
 
 ## Constraints
 
@@ -57,7 +58,7 @@ packages/db                          ← Kysely + pg, the only package that touc
 ## Phases
 
 - [x] 0 — Walking skeleton: workspace, CI gate, one endpoint, one grid row, one green E2E
-- [ ] 1 — Set data: CDragon sync, patch-versioned units/spells/items/traits
+- [x] 1 — Set data: CDragon sync, patch-versioned units/spells/items/traits
 - [ ] 2 — Ingestion: rate limiter, Riot client, resumable cursors, raw store
 - [ ] 3 — Facts & rollups: extraction, aggregates, golden-file suite
 - [ ] 4 — Explorer v1: unit / item / trait pivots, avg place · top4 · win, sample guards
@@ -79,21 +80,27 @@ packages/db                          ← Kysely + pg, the only package that touc
   (patch-scoped read, re-validated through `parseUnit`). All Testcontainers-backed, real
   Postgres per test run. Postgres also runs locally via `docker-compose.yml` (Postgres 18 —
   note its data-dir convention changed from `/var/lib/postgresql/data` to `/var/lib/postgresql`).
-- **1.4, domain half** — `resolveAbilityVariables(variables, starLevel)`: 1-indexed star level,
-  clamps both ends (a `starLevel <= 0` bug from `Array.prototype.at()`'s negative-index
-  wraparound was caught in review and fixed before merge).
-- Web app has four unstyled tables stacked on one page (Explorer/Units/Items/Traits) reading
-  from `apps/api`'s static mock (see Architecture Decisions — this predates `packages/db` and
-  hasn't been swapped over yet).
+- **1.4 complete** — `resolveAbilityVariables(variables, starLevel)` in `packages/domain`
+  (1-indexed, clamps both ends; a `starLevel <= 0` bug from `Array.prototype.at()`'s
+  negative-index wraparound was caught in review and fixed before merge). `apps/api`'s
+  `GET /static/units/:apiName?patch=&star=` reads real Postgres via `packages/db`'s `getUnit`,
+  applies `resolveAbilityVariables`, 400s without `patch`, falls back gracefully (not a crash)
+  without `DATABASE_URL`. `apps/worker/seedDb.ts` populates local Postgres from the CDragon
+  adapter's real output. Root `pnpm start` runs `apps/api` + `apps/web` together
+  (`pnpm --parallel --filter ... --filter ... run dev`) — only those two, not all 7 workspaces.
+  Verified end-to-end with curl against a real running server + real Postgres, not just tests.
+- Web app has four unstyled tables stacked on one page (Explorer/Units/Items/Traits).
 - Changesets added (by a separate PR); `.changeset/config.json` needed
   `privatePackages: { version: true, tag: false }` since every package here is private —
-  without it, `changeset status`/`add` silently found nothing to version.
+  without it, `changeset status`/`add` silently found nothing to version. Two changesets
+  currently pending (1.3's db/domain work, 1.4's wiring) — not yet consumed by `changeset version`.
 
-**In progress**: Phase 1.4, the wiring half.
-**Next**: swap `apps/api/src/static/setData.ts`'s `loadUnits()`/`getUnitByApiName()` for real
-`packages/db` reads (`getUnit(db, apiName, patch)`), thread a `patch` query param through the
-route, and call `resolveAbilityVariables` before returning a unit. `apps/api` will need a real
-`Kysely` instance (connection string from env, not yet defined) instead of reading JSON.
+**In progress**: nothing — Phase 1 is done. PR #6 (`feature/connect-to-database`, commits
+`817b2eb`, `469dd0d`) is open, all 6 CI checks green (Tests · Type Check · Lint · Build · E2E ·
+Changeset), `mergeable_state: clean` — ready to merge.
+**Next**: merge PR #6, then start Phase 2 — Ingestion (rate limiter, Riot client, resumable
+cursors, raw store). That phase talks to a real external API for the first time; expect the
+first real API-key and rate-limit decisions to land there.
 
 **Workflow note**: from this phase on, the mentor writes the failing test and explains the
 why; the developer writes the implementation. Verified in-session, not just handed over blind —
@@ -113,6 +120,15 @@ before moving on (see: the `starLevel <= 0` catch above).
   via `@testcontainers/postgresql`) — `TS2742`, "cannot be named without a reference". Fix is
   always the same shape: make the wrapper `async` and `await` internally so its own declared
   return type is simple (`void`, or your own interface), not the library's exact type.
+- Real regression, caught by the developer using the app, not by a test: `buildApp(db?)` was
+  designed so a missing `db` only breaks the one route that needs it, but `server.ts`'s first
+  version contradicted that by hard-throwing on a missing `DATABASE_URL` — killing the *entire*
+  server, including every mock-backed route that never touches Postgres. Lesson: when a
+  dependency is optional at one layer, every caller has to actually honour that, not just the
+  layer that declared it optional. Fixed to warn and pass `db: undefined` instead.
+- CI's `test` job runs Testcontainers-backed tests (3 spec files spin up real ephemeral Postgres
+  containers) — confirmed green on GitHub-hosted `ubuntu-latest` runners (PR #6, commit
+  `469dd0d`), zero extra CI config needed. Docker is available on those runners by default.
 
 ## Open Questions
 

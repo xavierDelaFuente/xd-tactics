@@ -6,5 +6,5 @@
     "types": ["node"]
   },
   "include": ["src"],
-  "references": [{ "path": "../../packages/domain" }]
+  "references": [{ "path": "../../packages/db" }, { "path": "../../packages/domain" }]
 }
