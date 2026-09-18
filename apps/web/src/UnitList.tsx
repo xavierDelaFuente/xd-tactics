@@ -4,7 +4,7 @@ export function UnitList() {
   const units = useUnits();
 
   return (
-    <table>
+    <table aria-label="Units">
       <thead>
         <tr>
           <th>Name</th>

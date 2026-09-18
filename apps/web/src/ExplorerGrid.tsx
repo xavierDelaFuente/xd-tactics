@@ -4,7 +4,7 @@ export function ExplorerGrid() {
   const rows = useExplorerRows();
 
   return (
-    <table>
+    <table aria-label="Explorer">
       <thead>
         <tr>
           <th>Name</th>
