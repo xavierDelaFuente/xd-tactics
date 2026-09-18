@@ -1,5 +1,5 @@
-import type { Unit } from '@xd-tactics/domain';
 import { PostgreSqlContainer, type StartedPostgreSqlContainer } from '@testcontainers/postgresql';
+import type { Unit } from '@xd-tactics/domain';
 import { Kysely, PostgresDialect } from 'kysely';
 import { Pool } from 'pg';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -42,8 +42,12 @@ describe('syncUnitsForPatch + getUnit', () => {
   });
 
   it("returns each patch's own stats for the same unit", async () => {
-    await syncUnitsForPatch(db, '15.1', [fixtureUnit({ stats: { ...fixtureUnit().stats, hp: 800 } })]);
-    await syncUnitsForPatch(db, '15.2', [fixtureUnit({ stats: { ...fixtureUnit().stats, hp: 900 } })]);
+    await syncUnitsForPatch(db, '15.1', [
+      fixtureUnit({ stats: { ...fixtureUnit().stats, hp: 800 } }),
+    ]);
+    await syncUnitsForPatch(db, '15.2', [
+      fixtureUnit({ stats: { ...fixtureUnit().stats, hp: 900 } }),
+    ]);
 
     const unitFromA = await getUnit(db, 'TFT15_Jinx', '15.1');
     const unitFromB = await getUnit(db, 'TFT15_Jinx', '15.2');
