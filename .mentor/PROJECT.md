@@ -69,38 +69,28 @@ packages/db                          ← Kysely + pg, the only package that touc
 ## Current State
 
 **Done**:
-- **Phase 0** — walking skeleton, merged to `main`.
-- **1.1 Unit schema** — `packages/domain`'s `unitSchema`/`parseUnit` (revised once against real
-  CDragon data: added `name`, fixed `ability.variables` to be star-indexed arrays not a flat map).
-- **1.2 CDragon adapter** — `apps/worker/src/static/cdragonAdapter.ts`, fixture-backed
-  (`fixtures/cdragon-set18.sample.json`, a real recorded-and-trimmed CDragon payload, not
-  fabricated), handles real messy data (unreleased units/items, malformed trait tiers).
-- **1.3 Patch versioning** — `packages/db`: Kysely migration for `set_data_units` keyed by
-  `(patch, api_name)`, `syncUnitsForPatch` (idempotent upsert), `getUnit(apiName, patch)`
-  (patch-scoped read, re-validated through `parseUnit`). All Testcontainers-backed, real
-  Postgres per test run. Postgres also runs locally via `docker-compose.yml` (Postgres 18 —
-  note its data-dir convention changed from `/var/lib/postgresql/data` to `/var/lib/postgresql`).
-- **1.4 complete** — `resolveAbilityVariables(variables, starLevel)` in `packages/domain`
-  (1-indexed, clamps both ends; a `starLevel <= 0` bug from `Array.prototype.at()`'s
-  negative-index wraparound was caught in review and fixed before merge). `apps/api`'s
-  `GET /static/units/:apiName?patch=&star=` reads real Postgres via `packages/db`'s `getUnit`,
-  applies `resolveAbilityVariables`, 400s without `patch`, falls back gracefully (not a crash)
-  without `DATABASE_URL`. `apps/worker/seedDb.ts` populates local Postgres from the CDragon
-  adapter's real output. Root `pnpm start` runs `apps/api` + `apps/web` together
-  (`pnpm --parallel --filter ... --filter ... run dev`) — only those two, not all 7 workspaces.
-  Verified end-to-end with curl against a real running server + real Postgres, not just tests.
-- Web app has four unstyled tables stacked on one page (Explorer/Units/Items/Traits).
-- Changesets added (by a separate PR); `.changeset/config.json` needed
-  `privatePackages: { version: true, tag: false }` since every package here is private —
-  without it, `changeset status`/`add` silently found nothing to version. Two changesets
-  currently pending (1.3's db/domain work, 1.4's wiring) — not yet consumed by `changeset version`.
+- **Phase 0** — walking skeleton. **Phase 1 — Set data**, all merged to `main` (PRs #5, #6):
+  `unitSchema`/`parseUnit` (domain); the CDragon adapter (`apps/worker`, fixture-backed against
+  a real recorded payload, handles unreleased/malformed entries); `packages/db` (Kysely
+  migration, idempotent `syncUnitsForPatch`, patch-scoped `getUnit`, all Testcontainers-backed);
+  `resolveAbilityVariables` (a `starLevel <= 0` wraparound bug was caught in review);
+  `GET /static/units/:apiName?patch=&star=` on real Postgres; `apps/worker` `seed:db`; root
+  `pnpm start` (api + web only). Verified with curl against a real server, not just tests.
+- **2.1 Rate limiter** — `createRateLimiter(limits, clock)` in `packages/domain`: sliding-window
+  log, `acquire()` delays (never rejects) until a slot is free under *every* budget (Riot's dev
+  key: 20/1s + 100/2min). Clock injected, so tests run in fake-timer virtual time; spec was
+  mutation-tested (no-op, no-recheck-after-wake, first-budget-only limiters all fail it).
+  Branch `feature/rate-limiter`, not yet pushed.
+- Web app: four unstyled tables (Explorer/Units/Items/Traits). Changesets need
+  `privatePackages: { version: true, tag: false }` in `.changeset/config.json` (every package is
+  private); three changesets pending, none consumed by `changeset version` yet.
 
-**In progress**: nothing — Phase 1 is done. PR #6 (`feature/connect-to-database`, commits
-`817b2eb`, `469dd0d`) is open, all 6 CI checks green (Tests · Type Check · Lint · Build · E2E ·
-Changeset), `mergeable_state: clean` — ready to merge.
-**Next**: merge PR #6, then start Phase 2 — Ingestion (rate limiter, Riot client, resumable
-cursors, raw store). That phase talks to a real external API for the first time; expect the
-first real API-key and rate-limit decisions to land there.
+**In progress**: Phase 2 — Ingestion. 2.1 done (above); commit, push, PR it.
+**Next**: 2.2 Riot client (`C`, fixture-backed: match-ids-by-puuid, match-by-id, league entries
+parse into domain types; 429 → backoff via the rate limiter; 404 → typed not-found, not a
+throw). **Prereq, not code**: a Riot *development* key (24h expiry) in `.env` as `RIOT_API_KEY`
+— needed only to *record* fixtures; tests never touch the network. Then 2.3 crawl, 2.4
+resumable cursor, 2.5 raw store (all Testcontainers).
 
 **Workflow note**: from this phase on, the mentor writes the failing test and explains the
 why; the developer writes the implementation. Verified in-session, not just handed over blind —
