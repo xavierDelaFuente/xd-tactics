@@ -1,0 +1,67 @@
+[
+  {
+    "puuid": "REDACTED_9____________________________________________________________________",
+    "queueType": "RANKED_TFT",
+    "tier": "DIAMOND",
+    "rank": "I",
+    "leaguePoints": 31,
+    "wins": 113,
+    "losses": 80,
+    "veteran": false,
+    "inactive": false,
+    "freshBlood": false,
+    "hotStreak": false
+  },
+  {
+    "puuid": "REDACTED_10___________________________________________________________________",
+    "queueType": "RANKED_TFT",
+    "tier": "DIAMOND",
+    "rank": "I",
+    "leaguePoints": 2,
+    "wins": 87,
+    "losses": 73,
+    "veteran": false,
+    "inactive": false,
+    "freshBlood": false,
+    "hotStreak": false
+  },
+  {
+    "puuid": "REDACTED_11___________________________________________________________________",
+    "queueType": "RANKED_TFT",
+    "tier": "DIAMOND",
+    "rank": "I",
+    "leaguePoints": 18,
+    "wins": 89,
+    "losses": 69,
+    "veteran": false,
+    "inactive": false,
+    "freshBlood": false,
+    "hotStreak": true
+  },
+  {
+    "puuid": "REDACTED_12___________________________________________________________________",
+    "queueType": "RANKED_TFT",
+    "tier": "DIAMOND",
+    "rank": "I",
+    "leaguePoints": 20,
+    "wins": 112,
+    "losses": 91,
+    "veteran": false,
+    "inactive": false,
+    "freshBlood": false,
+    "hotStreak": false
+  },
+  {
+    "puuid": "REDACTED_13___________________________________________________________________",
+    "queueType": "RANKED_TFT",
+    "tier": "DIAMOND",
+    "rank": "I",
+    "leaguePoints": 50,
+    "wins": 64,
+    "losses": 45,
+    "veteran": false,
+    "inactive": false,
+    "freshBlood": true,
+    "hotStreak": false
+  }
+]

@@ -85,12 +85,15 @@ packages/db                          ← Kysely + pg, the only package that touc
   `privatePackages: { version: true, tag: false }` in `.changeset/config.json` (every package is
   private); three changesets pending, none consumed by `changeset version` yet.
 
-**In progress**: Phase 2 — Ingestion. 2.1 done (above); commit, push, PR it.
-**Next**: 2.2 Riot client (`C`, fixture-backed: match-ids-by-puuid, match-by-id, league entries
-parse into domain types; 429 → backoff via the rate limiter; 404 → typed not-found, not a
-throw). **Prereq, not code**: a Riot *development* key (24h expiry) in `.env` as `RIOT_API_KEY`
-— needed only to *record* fixtures; tests never touch the network. Then 2.3 crawl, 2.4
-resumable cursor, 2.5 raw store (all Testcontainers).
+**In progress**: 2.2 Riot client, branch `feature/riot-client` (stacked on 2.1's commit). Done
+so far: fixtures recorded from the live API for `Asnewyla#EUW` (default seed; euw1 / europe) and
+**redacted** (`redact.ts` — PUUIDs → `REDACTED_<n>`, names → `Player<n>`; a guard spec fails if a
+raw recording is ever committed), `record:riot` script, and the client's contract spec (14
+tests, mutation-tested with 6 mutants). **The spec is red on purpose** — `riotClient.ts` (the
+adapter) and its domain types are the developer's to write. Riot keys go in `.env` only, never
+`.env.example` (which is committed): a key was once pasted into the template and caught
+before commit.
+**Next**: finish 2.2, then 2.3 crawl, 2.4 resumable cursor, 2.5 raw store (all Testcontainers).
 
 **Workflow note**: from this phase on, the mentor writes the failing test and explains the
 why; the developer writes the implementation. Verified in-session, not just handed over blind —
@@ -130,6 +133,11 @@ before moving on (see: the `starLevel <= 0` catch above).
 4. Who authors the effect catalogue entries for a new set, and how fast must it turn around
    on patch day? This is the coach's maintenance cost and it is not zero.
 5. Does xd-tactics consume `@asnewyla/*` components, or is the grid too specialised?
+6. **How do we know a match's patch?** Found in the real data: `info.game_version` is the
+   placeholder `"TFT Unreal Version ?.?.?.?"`, so a match can't say which patch it was played on,
+   yet every stat must be patch-scoped. Candidates: map `game_datetime` onto a patch calendar,
+   or key on `tft_set_number` + `data_version`. Must be settled before Phase 3's rollups; the
+   raw store (2.5) should keep `game_datetime` regardless.
 
 Deferred by decision, not oversight: augment and portal pivots, comp clustering, saved views,
 and coach positioning/counters (Phase 7). Revisit at the next planning session.
