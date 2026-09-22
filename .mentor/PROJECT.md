@@ -79,27 +79,32 @@ packages/db                          ← Kysely + pg, the only package that touc
 - **2.1 Rate limiter** (merged, PR #7) — `createRateLimiter(limits, clock)` in `packages/domain`:
   sliding-window log; `acquire()` delays, never rejects, until a slot is free under *every*
   budget (Riot dev key: 20/1s + 100/2min). Clock injected; spec mutation-tested.
-- Web app: four unstyled tables (Explorer/Units/Items/Traits). Changesets need
-  `privatePackages: { version: true, tag: false }` in `.changeset/config.json` (every package is
-  private); three changesets pending, none consumed by `changeset version` yet.
-
-**In progress**: nothing — 2.2 done, plus Open Question 6 resolved (below), all on branch
-`feature/riot-client-api` (branched from `main`; trunk-based, short-lived branches), uncommitted,
-pending PR/CI.
-- **2.2 Riot client** — `createRiotClient` in `apps/worker/src/riot`: account, match ids, match
-  (parsed *and* raw), league entries; awaits the rate limiter before every request, including 429
-  retries; 404 / 401+403 / exhausted-429 are typed results, everything unexpected throws.
-  `Account`/`LeagueEntry`/`Match` types live in `packages/domain`; Riot's snake_case shape lives
-  only in `riotSchemas.ts`. Fixtures recorded from the live API for `Asnewyla#EUW` (default seed;
-  euw1 / europe) and **redacted** (PUUIDs → `REDACTED_<n>`, names → `Player<n>`; a guard spec
-  fails on a raw recording); `record:riot` re-records. Contract spec mutation-tested.
-  Riot keys go in `.env` only, never `.env.example` (committed) — a key was once pasted into the
-  template and caught before commit.
+- **2.2 Riot client + patch calendar** (merged, PR #8) — `createRiotClient` in
+  `apps/worker/src/riot`: account, match ids, match (parsed *and* raw), league entries; awaits
+  the rate limiter before every request including 429 retries; 404 / 401+403 / exhausted-429 are
+  typed results, everything unexpected throws. `Account`/`LeagueEntry`/`Match` types live in
+  `packages/domain`; Riot's snake_case shape lives only in `riotSchemas.ts`. Fixtures recorded
+  from the live API and **redacted** (PUUIDs → `REDACTED_<n>`, names → `Player<n>`; a guard spec
+  fails on a raw recording). Riot keys go in `.env` only, never `.env.example` (committed) — a
+  key was once pasted into the template and caught before commit. Open Question 6 (patch)
+  resolved the same PR — see Open Questions.
 - Not handled yet, deliberately: transient 5xx from Riot throws (`RiotHttpError`) rather than
   retrying — decide the policy once the crawl (2.3) shows how often it happens.
-- **Patch calendar** (Open Question 6) — see Open Questions below for the decision.
-**Next**: 2.3 crawl (`I`): a seeded puuid enqueues its recent match ids and skips ones already
-stored — seed from the Diamond league page. Then 2.4 resumable cursor, 2.5 raw store (Testcontainers).
+- Web app: four unstyled tables (Explorer/Units/Items/Traits). Changesets need
+  `privatePackages: { version: true, tag: false }` in `.changeset/config.json` (every package is
+  private); several changesets pending, none consumed by `changeset version` yet.
+
+**In progress**: nothing — 2.3 done on branch `feature/crawl-match-queue`, uncommitted, pending
+PR/CI.
+- **2.3 Crawl** — `enqueueMatchesForPuuid(db, client, puuid)` in `apps/worker/src/crawl`: fetches
+  a puuid's recent match ids, enqueues the ones not already known. Dedup is one atomic
+  `INSERT ... ON CONFLICT DO NOTHING RETURNING match_id` — no separate check-then-insert, so no
+  race if two crawlers discover the same match at once. New `match_queue` table (migration
+  `0002`), keyed by `match_id`. `client` is a narrow `MatchIdsClient` interface (just
+  `getMatchIds`), not the full `RiotClient` — the test's stub stays trivial and doesn't need a
+  real Riot fixture (that HTTP contract is already covered by `riotClient.spec.ts`).
+**Next**: 2.4 resumable cursor (`I`: killing the worker mid-batch and restarting processes each
+match exactly once), then 2.5 raw store (`I`: storing the same match twice yields one row).
 
 **Workflow note**: from this phase on, the mentor writes the failing test and explains the
 why; the developer writes the implementation. Verified in-session, not just handed over blind —
@@ -112,8 +117,6 @@ before moving on (see: the `starLevel <= 0` catch above).
   hangs. Browsers were installed by fetching the zips over IPv4 with curl into
   `%LOCALAPPDATA%\ms-playwright\`. CI (Linux) is unaffected. If `playwright install` hangs again
   after a version bump, do the same manual fetch.
-- Docker Desktop needed WSL2 (Windows Home has no Hyper-V backend option) — `wsl --install` +
-  reboot, then Docker Desktop installs and starts cleanly.
 - `tsc -b`'s composite/declaration-emit mode will refuse to infer a function's return type if it
   bottoms out in a *transitive* dependency's type (e.g. `testcontainers`'s `StoppedTestContainer`
   via `@testcontainers/postgresql`) — `TS2742`, "cannot be named without a reference". Fix is

@@ -109,10 +109,16 @@ importers:
       '@xd-tactics/domain':
         specifier: workspace:*
         version: link:../../packages/domain
+      kysely:
+        specifier: ^0.29.6
+        version: 0.29.6
       zod:
         specifier: ^4.6.2
         version: 4.6.2
     devDependencies:
+      '@testcontainers/postgresql':
+        specifier: ^12.1.0
+        version: 12.1.0
       tsx:
         specifier: ^4.23.13
         version: 4.23.13
