@@ -12,9 +12,11 @@
   "dependencies": {
     "@xd-tactics/db": "workspace:*",
     "@xd-tactics/domain": "workspace:*",
+    "kysely": "^0.29.6",
     "zod": "^4.6.2"
   },
   "devDependencies": {
+    "@testcontainers/postgresql": "^12.1.0",
     "tsx": "^4.23.13"
   }
 }
