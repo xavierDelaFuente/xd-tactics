@@ -6,7 +6,8 @@
   "scripts": {
     "generate:mock": "tsx src/static/generateMock.ts",
     "seed:db": "tsx src/static/seedDb.ts",
-    "record:riot": "tsx src/riot/recordFixtures.ts"
+    "record:riot": "tsx src/riot/recordFixtures.ts",
+    "record:patch-versions": "tsx src/patch/recordFixtures.ts"
   },
   "dependencies": {
     "@xd-tactics/db": "workspace:*",
