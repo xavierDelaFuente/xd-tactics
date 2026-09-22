@@ -5,11 +5,14 @@
   "type": "module",
   "scripts": {
     "generate:mock": "tsx src/static/generateMock.ts",
-    "seed:db": "tsx src/static/seedDb.ts"
+    "seed:db": "tsx src/static/seedDb.ts",
+    "record:riot": "tsx src/riot/recordFixtures.ts",
+    "record:patch-versions": "tsx src/patch/recordFixtures.ts"
   },
   "dependencies": {
     "@xd-tactics/db": "workspace:*",
-    "@xd-tactics/domain": "workspace:*"
+    "@xd-tactics/domain": "workspace:*",
+    "zod": "^4.6.2"
   },
   "devDependencies": {
     "tsx": "^4.23.13"

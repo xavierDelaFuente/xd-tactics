@@ -76,21 +76,30 @@ packages/db                          ← Kysely + pg, the only package that touc
   `resolveAbilityVariables` (a `starLevel <= 0` wraparound bug was caught in review);
   `GET /static/units/:apiName?patch=&star=` on real Postgres; `apps/worker` `seed:db`; root
   `pnpm start` (api + web only). Verified with curl against a real server, not just tests.
-- **2.1 Rate limiter** — `createRateLimiter(limits, clock)` in `packages/domain`: sliding-window
-  log, `acquire()` delays (never rejects) until a slot is free under *every* budget (Riot's dev
-  key: 20/1s + 100/2min). Clock injected, so tests run in fake-timer virtual time; spec was
-  mutation-tested (no-op, no-recheck-after-wake, first-budget-only limiters all fail it).
-  Branch `feature/rate-limiter`, not yet pushed.
+- **2.1 Rate limiter** (merged, PR #7) — `createRateLimiter(limits, clock)` in `packages/domain`:
+  sliding-window log; `acquire()` delays, never rejects, until a slot is free under *every*
+  budget (Riot dev key: 20/1s + 100/2min). Clock injected; spec mutation-tested.
 - Web app: four unstyled tables (Explorer/Units/Items/Traits). Changesets need
   `privatePackages: { version: true, tag: false }` in `.changeset/config.json` (every package is
   private); three changesets pending, none consumed by `changeset version` yet.
 
-**In progress**: Phase 2 — Ingestion. 2.1 done (above); commit, push, PR it.
-**Next**: 2.2 Riot client (`C`, fixture-backed: match-ids-by-puuid, match-by-id, league entries
-parse into domain types; 429 → backoff via the rate limiter; 404 → typed not-found, not a
-throw). **Prereq, not code**: a Riot *development* key (24h expiry) in `.env` as `RIOT_API_KEY`
-— needed only to *record* fixtures; tests never touch the network. Then 2.3 crawl, 2.4
-resumable cursor, 2.5 raw store (all Testcontainers).
+**In progress**: nothing — 2.2 done, plus Open Question 6 resolved (below), all on branch
+`feature/riot-client-api` (branched from `main`; trunk-based, short-lived branches), uncommitted,
+pending PR/CI.
+- **2.2 Riot client** — `createRiotClient` in `apps/worker/src/riot`: account, match ids, match
+  (parsed *and* raw), league entries; awaits the rate limiter before every request, including 429
+  retries; 404 / 401+403 / exhausted-429 are typed results, everything unexpected throws.
+  `Account`/`LeagueEntry`/`Match` types live in `packages/domain`; Riot's snake_case shape lives
+  only in `riotSchemas.ts`. Fixtures recorded from the live API for `Asnewyla#EUW` (default seed;
+  euw1 / europe) and **redacted** (PUUIDs → `REDACTED_<n>`, names → `Player<n>`; a guard spec
+  fails on a raw recording); `record:riot` re-records. Contract spec mutation-tested.
+  Riot keys go in `.env` only, never `.env.example` (committed) — a key was once pasted into the
+  template and caught before commit.
+- Not handled yet, deliberately: transient 5xx from Riot throws (`RiotHttpError`) rather than
+  retrying — decide the policy once the crawl (2.3) shows how often it happens.
+- **Patch calendar** (Open Question 6) — see Open Questions below for the decision.
+**Next**: 2.3 crawl (`I`): a seeded puuid enqueues its recent match ids and skips ones already
+stored — seed from the Diamond league page. Then 2.4 resumable cursor, 2.5 raw store (Testcontainers).
 
 **Workflow note**: from this phase on, the mentor writes the failing test and explains the
 why; the developer writes the implementation. Verified in-session, not just handed over blind —
@@ -110,15 +119,12 @@ before moving on (see: the `starLevel <= 0` catch above).
   via `@testcontainers/postgresql`) — `TS2742`, "cannot be named without a reference". Fix is
   always the same shape: make the wrapper `async` and `await` internally so its own declared
   return type is simple (`void`, or your own interface), not the library's exact type.
-- Real regression, caught by the developer using the app, not by a test: `buildApp(db?)` was
-  designed so a missing `db` only breaks the one route that needs it, but `server.ts`'s first
-  version contradicted that by hard-throwing on a missing `DATABASE_URL` — killing the *entire*
-  server, including every mock-backed route that never touches Postgres. Lesson: when a
-  dependency is optional at one layer, every caller has to actually honour that, not just the
-  layer that declared it optional. Fixed to warn and pass `db: undefined` instead.
-- CI's `test` job runs Testcontainers-backed tests (3 spec files spin up real ephemeral Postgres
-  containers) — confirmed green on GitHub-hosted `ubuntu-latest` runners (PR #6, commit
-  `469dd0d`), zero extra CI config needed. Docker is available on those runners by default.
+- Lesson from a real regression: `buildApp(db?)` makes `db` optional so only one route needs
+  Postgres, but `server.ts`'s first version hard-threw on a missing `DATABASE_URL` anyway,
+  killing routes that never touch it. When a dependency is optional at one layer, every caller
+  has to honour that, not just the layer that declared it.
+- CI's Testcontainers-backed tests are confirmed green on GitHub's `ubuntu-latest` runners
+  (Docker is available by default there) — no extra CI config needed.
 
 ## Open Questions
 
@@ -130,6 +136,18 @@ before moving on (see: the `starLevel <= 0` catch above).
 4. Who authors the effect catalogue entries for a new set, and how fast must it turn around
    on patch day? This is the coach's maintenance cost and it is not zero.
 5. Does xd-tactics consume `@asnewyla/*` components, or is the grid too specialised?
+6. ~~How do we know a match's patch?~~ **Resolved.** `info.game_version` is a placeholder
+   (`"TFT Unreal Version ?.?.?.?"`), and Riot exposes no patch release date anywhere (checked:
+   Data Dragon's `versions.json`, its `realms/*.json`, CDragon's `content-metadata.json`).
+   Decision: **Data Dragon's version string is the canonical patch identifier** (`16.18`, not
+   the unrelated `26.3`-style numbering on the public patch-notes site — CDragon's own
+   `content-metadata.json` already uses the Data Dragon family, so this keeps the whole system
+   in one numbering scheme). Its **start date is approximated**, not fetched or hand-entered:
+   `packages/domain`'s `buildPatchCalendar` counts backward from now in ~14-day steps over the
+   ordered version list — TFT's cadence is a behaviour, not a rule, so this is accepted
+   approximation, not ground truth, and is fine for a learning project's thin sample sizes.
+   `apps/worker/src/patch/` is the adapter (fetch + normalize "16.18.1" → "16.18", collapsing
+   hotfix duplicates); `getPatchCalendar()` is where I/O and the pure calendar meet.
 
 Deferred by decision, not oversight: augment and portal pivots, comp clustering, saved views,
 and coach positioning/counters (Phase 7). Revisit at the next planning session.
